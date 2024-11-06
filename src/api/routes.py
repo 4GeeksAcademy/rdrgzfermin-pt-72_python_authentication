@@ -20,3 +20,56 @@ def handle_hello():
     }
 
     return jsonify(response_body), 200
+
+@api.route('/sign-in', methods=['POST'])
+def sign_in():
+    body = request.json
+    if body is None:
+        return jsonify({"message" : "Please provide a valid email and password!"}), 400
+    email = body["email"]
+    password = body["password"]
+    user = User.query.filter_by(email = email).first()
+    if user is None:
+        return jsonify({"message" : "Email does not exist in our database"}),404
+    if user.password != password:
+        return jsonify({"message" : "Wrong password"}),401
+    
+    access_token = create_access_token(identity=email)
+
+    response_body = {
+        "message": "You successfully signed in your account","access_token": access_token
+    }
+
+    return jsonify(response_body), 200
+
+
+
+@api.route('/sign-up', methods=['POST'])
+def sign_up():
+    body = request.json
+    if body is None:
+        return jsonify({"message" : "Please provide a valid email and password!"}), 400
+    email = body["email"]
+    password = body["password"]
+    check_user = User.query.filter_by(email = email).first()
+    if check_user:
+        return jsonify({"message" : "This user already exist"}),409
+    new_user = User(emali = email, password = password, is_active = True)
+    db.session.add(new_user)
+    db.session.commit()
+
+    response_body = {
+        "message": "Account successfully created",
+    }
+
+    return jsonify(response_body), 201
+
+@api.route('/private', methods=['GET'])
+@jwt_required()
+def private():
+    # Access the identity of the current user with get_jwt_identity
+    user_email = get_jwt_identity()
+    response_body = {
+        "message": f"Logged in as: {user_email} Secret view. shhhh it's a secret"
+    }
+    return jsonify(response_body), 200
