@@ -5,7 +5,7 @@ export const Signup = () => {
     const [email, setEmail] = useState("");
     const [password, setPasword] = useState("");
 	const { store, actions } = useContext(Context);
-    const navigate = useNavigate()
+    //const navigate = useNavigate()
 
     const createUser = async() => {
         let response = await fetch(process.env.BACKEND_URL + "/signup", {
@@ -17,7 +17,7 @@ export const Signup = () => {
             })
         })
         let data = await response.json()
-        navigate("/")
+        //navigate("/")
     }
 
 	return (
