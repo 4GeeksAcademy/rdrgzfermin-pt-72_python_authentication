@@ -27,28 +27,28 @@ def handle_hello():
 def create_user():
     body = request.get_json()
     user_email = body['email']
-    user_password = hashlib.sha256(body['password']).encode("utf-8")
+    user_password =  hashlib.sha256(body['password'].encode("utf-8")).hexdigest()
     user = User(email = user_email, password = user_password)
     db.session.add(user)
     db.session.commit()
 
-    return jsonify("User successfully create")
+    return jsonify("User successfully created")
 
 @api.route('/login', methods=['POST'])
 def login():
     body = request.get_json()
     user_email = body['email']
-    user_password = hashlib.sha256(body['password']).encode("utf-8")
+    user_password = hashlib.sha256(body['password'].encode("utf-8")).hexdigest()
     user = User.query.filter_by(email = user_email, password = user_password).first()
     if user and user.password == user_password:
         access_token = create_access_token(identity = user.id)
-        return jsonify(access_token = access_token, user = user.serralize())
+        return jsonify(access_token = access_token, user = user.serialize())
     else:
         return jsonify("user does not exist")
 
 @api.route('/user', methods=['GET'])
-@jwt_required
+@jwt_required()
 def get_user():
     uid = get_jwt_identity()
     user = User.query.filter_by(id=uid).first()
-    return jsonify(user)
+    return jsonify(user.serialize())
