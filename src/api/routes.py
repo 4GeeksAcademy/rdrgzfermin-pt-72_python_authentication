@@ -42,7 +42,7 @@ def login():
     user = User.query.filter_by(email = user_email, password = user_password).first()
     if user and user.password == user_password:
         access_token = create_access_token(identity = user.id)
-        return jsonify(access_token = access_token, user = user)
+        return jsonify(access_token = access_token, user = user.serralize())
     else:
         return jsonify("user does not exist")
 
