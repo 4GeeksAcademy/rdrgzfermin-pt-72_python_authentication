@@ -6,6 +6,7 @@ export const Profile = () => {
 	const { store, actions } = useContext(Context);
 
 	const getUser = async() => {
+		console.log(store.token)
 		let response = await fetch(process.env.BACKEND_URL + "/user" , {
 			headers: {
 				'Authorization': "Bearer " + store.token, 
@@ -23,7 +24,7 @@ export const Profile = () => {
 	return (
 		<div className="text-center mt-5">
 			{
-				user.email != undefined ?  
+				store.token ?  
 				<div>
 					<h1>Welcome Back</h1>
 					<h3>{user.email}</h3> 
